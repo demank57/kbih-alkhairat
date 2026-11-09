@@ -1,0 +1,132 @@
+{
+  "entities": {
+    "Jamaah": {
+      "title": "Jamaah",
+      "description": "Informasi data pendaftaran jemaah haji",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "tglPendaftaran": { "type": "string" },
+        "noPorsi": { "type": "string" },
+        "namaLengkap": { "type": "string" },
+        "binBinti": { "type": "string" },
+        "nik": { "type": "string" },
+        "jenisKelamin": { "type": "string", "enum": ["Laki-Laki", "Perempuan"] },
+        "tempatLahir": { "type": "string" },
+        "tanggalLahir": { "type": "string" },
+        "noHp": { "type": "string" },
+        "alamatDomisili": { "type": "string" },
+        "noPaspor": { "type": "string" },
+        "kantorImigrasi": { "type": "string" },
+        "tglTerbitPaspor": { "type": "string" },
+        "tglHabisPaspor": { "type": "string" },
+        "tinggiBadan": { "type": "number" },
+        "beratBadan": { "type": "number" },
+        "riwayatPenyakit": { "type": "string" },
+        "namaMahram": { "type": "string" },
+        "hubunganMahram": { "type": "string", "enum": ["Suami/Istri", "Orang Tua", "Anak Kandung", "Saudara", "Lainnya", ""] },
+        "nikMahram": { "type": "string" },
+        "noHpMahram": { "type": "string" },
+        "alamatMahram": { "type": "string" },
+        "dokumenKK": { "type": "string" },
+        "dokumenKTP": { "type": "string" },
+        "dokumenFoto": { "type": "string" },
+        "statusAdministrasi": { "type": "string", "enum": ["Lengkap", "Belum Lengkap"] },
+        "periodeTahun": { "type": "string" },
+        "statusAktif": { "type": "string", "enum": ["Aktif", "Tidak Aktif"] }
+      },
+      "required": ["id", "tglPendaftaran", "namaLengkap", "nik", "jenisKelamin", "statusAdministrasi", "periodeTahun"]
+    },
+    "HajiPeriod": {
+      "title": "HajiPeriod",
+      "description": "Informasi tahun kuota dan status bimbingan haji",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "tahun": { "type": "string" },
+        "kuota": { "type": "number" },
+        "status": { "type": "string", "enum": ["buka", "tutup"] }
+      },
+      "required": ["id", "tahun", "kuota", "status"]
+    },
+    "Payment": {
+      "title": "Payment",
+      "description": "Informasi riwayat transaksi setoran jemaah",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "jamaahId": { "type": "string" },
+        "jenisSetoran": { "type": "string", "enum": ["Setoran Awal", "Cicilan", "Pelunasan"] },
+        "nominal": { "type": "number" },
+        "tanggalTransaksi": { "type": "string" },
+        "status": { "type": "string", "enum": ["Berhasil", "Pending", "Gagal"] },
+        "keterangan": { "type": "string" }
+      },
+      "required": ["id", "jamaahId", "jenisSetoran", "nominal", "tanggalTransaksi", "status"]
+    },
+    "LembagaConfig": {
+      "title": "LembagaConfig",
+      "description": "Informasi lembaga penyelenggara KBIH",
+      "type": "object",
+      "properties": {
+        "namaLembaga": { "type": "string" },
+        "namaPengelola": { "type": "string" },
+        "noHp": { "type": "string" },
+        "alamat": { "type": "string" }
+      },
+      "required": ["namaLembaga", "namaPengelola", "noHp", "alamat"]
+    },
+    "UserAccount": {
+      "title": "UserAccount",
+      "description": "Informasi hak akses pengguna sistem",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "username": { "type": "string" },
+        "nama": { "type": "string" },
+        "peran": { "type": "string", "enum": ["Admin", "Pengelola"] }
+      },
+      "required": ["id", "username", "nama", "peran"]
+    },
+    "DepartureSchedule": {
+      "title": "DepartureSchedule",
+      "description": "Informasi rencana penerbangan dan jadwal keberangkatan jemaah",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "jamaahId": { "type": "string" },
+        "tanggalKeberangkatan": { "type": "string" },
+        "tahunKeberangkatan": { "type": "string" },
+        "status": { "type": "string", "enum": ["Draft", "Diberangkatkan"] },
+        "keterangan": { "type": "string" }
+      },
+      "required": ["id", "jamaahId", "tanggalKeberangkatan", "tahunKeberangkatan", "status"]
+    }
+  },
+  "firestore": {
+    "/jamaah/{jamaahId}": {
+      "schema": { "$ref": "#/entities/Jamaah" },
+      "description": "Daftar jemaah haji terdaftar"
+    },
+    "/periode/{periodeId}": {
+      "schema": { "$ref": "#/entities/HajiPeriod" },
+      "description": "Daftar periode pendaftaran haji"
+    },
+    "/payment/{paymentId}": {
+      "schema": { "$ref": "#/entities/Payment" },
+      "description": "Transaksi pembayaran jemaah"
+    },
+    "/config/lembaga": {
+      "schema": { "$ref": "#/entities/LembagaConfig" },
+      "description": "Konformasi identitas KBIH"
+    },
+    "/accounts/{accountId}": {
+      "schema": { "$ref": "#/entities/UserAccount" },
+      "description": "Daftar operator dan pengelola akun"
+    },
+    "/departure_schedule/{scheduleId}": {
+      "schema": { "$ref": "#/entities/DepartureSchedule" },
+      "description": "Daftar jadwal dan rencana keberangkatan jemaah"
+    }
+  }
+}

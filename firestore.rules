@@ -1,0 +1,74 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-+:]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Jamaah
+    match /jamaah/{jamaahId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && incoming().id == jamaahId;
+      allow update: if isSignedIn() && isValidId(jamaahId) && incoming().id == existing().id;
+      allow delete: if isSignedIn() && isValidId(jamaahId);
+    }
+
+    // Periode
+    match /periode/{periodeId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && incoming().id == periodeId;
+      allow update: if isSignedIn() && isValidId(periodeId) && incoming().id == existing().id;
+      allow delete: if isSignedIn() && isValidId(periodeId);
+    }
+
+    // Payment
+    match /payment/{paymentId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && incoming().id == paymentId;
+      allow update: if isSignedIn() && isValidId(paymentId) && incoming().id == existing().id;
+      allow delete: if isSignedIn() && isValidId(paymentId);
+    }
+
+    // Config Lembaga
+    match /config/lembaga {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+
+    // Accounts
+    match /accounts/{accountId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && incoming().id == accountId;
+      allow update: if isSignedIn() && isValidId(accountId) && incoming().id == existing().id;
+      allow delete: if isSignedIn() && isValidId(accountId);
+    }
+
+    // Departure Schedule rencana penerbangan
+    match /departure_schedule/{scheduleId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // Health check test connection
+    match /test/{testId} {
+      allow read: if true;
+    }
+  }
+}
